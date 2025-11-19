@@ -1,0 +1,228 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Models\Lead;
+use App\Models\Sheat;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+
+class SheatController extends Controller
+{
+    public function addSheat(Request $request)
+    {
+        try {
+            $company = $request->user();
+
+            $validator = Validator::make($request->all(), [
+                'sheat_name' => 'required',
+                'csv_file' => 'required|mimes:csv,txt',
+                'agents' => 'required|array|min:1',
+                'agents.*' => 'exists:agents,id',
+                'status' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors(),
+                ], 400);
+            }
+
+            // ✅ 1. Create Sheat
+            $sheat = Sheat::create([
+                'sheat_name' => $request->sheat_name,
+                'company_id' => $company->id,
+                'agents' => json_encode($request->agents),
+                'status' => $request->status,
+            ]);
+
+            if ($sheat && $request->hasFile('csv_file')) {
+                $this->importCsvLeads($request->file('csv_file'), $sheat, $request->agents);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Sheat and leads added successfully',
+                'data' => $sheat->load('leads'),
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function fetchSheatList(Request $request)
+    {
+        try {
+            $company = $request->user();
+            $sheat = Sheat::where('company_id', $company->id)->get();
+            if ($sheat) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Successfully fetched sheat list.',
+                    'data' => $sheat
+                ], 200);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateSheat(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'sheat_id' => 'required|exists:sheats,id',
+                'sheat_name' => 'required',
+                'csv_file' => 'nullable|mimes:csv,txt',
+                'agents' => 'required|array|min:1',
+                'agents.*' => 'exists:users,id',
+                'status' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors(),
+                ], 400);
+            }
+
+            $sheat = Sheat::find($request->sheat_id);
+
+            if ($sheat) {
+                $sheat->update([
+                    'sheat_name' => $request->sheat_name,
+                    'agents' => json_encode($request->agents),
+                    'status' => $request->status,
+                ]);
+
+                // ✅ Import new leads (update or create)
+                if ($request->hasFile('csv_file')) {
+                    $this->importCsvLeads($request->file('csv_file'), $sheat, $request->agents);
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Sheat and leads updated successfully',
+                    'data' => $sheat->load('leads'),
+                ], 200);
+            }
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    private function importCsvLeads($file, $sheat, $agentIds)
+    {
+        if (!is_array($agentIds) || count($agentIds) === 0) {
+            throw new \Exception("Agent IDs must be a non-empty array.");
+        }
+
+        $path = $file->getRealPath();
+        $rows = array_map('str_getcsv', file($path));
+
+        $header = array_map('trim', $rows[0]);
+        unset($rows[0]);
+
+        $totalLeads = count($rows);
+        $totalAgents = count($agentIds);
+
+        $chunks = array_chunk($rows, ceil($totalLeads / $totalAgents));
+
+        foreach ($agentIds as $index => $agentId) {
+            $leadsForAgent = $chunks[$index] ?? [];
+
+            foreach ($leadsForAgent as $row) {
+                $data = array_combine($header, $row);
+
+                if (!$data)
+                    continue;
+
+                Lead::updateOrCreate(
+                    [
+                        'sheat_id' => $sheat->id,
+                        'phone' => $data['phone'] ?? null,
+                    ],
+                    [
+                        'company_id' => $sheat->company_id,
+                        'agent_id' => $agentId,
+                        'name' => $data['name'] ?? null,
+                        'email' => $data['email'] ?? null,
+                        'lead_source' => $data['lead_source'] ?? null,
+                        'status' => $data['status'] ?? null,
+                        'follow_up' => $data['follow_up'] ?? null,
+                    ]
+                );
+            }
+        }
+    }
+
+
+    public function deleteSheat(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'sheat_id' => 'required|exists:sheats,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors(),
+                ], 400);
+            }
+
+            $sheat = Sheat::where('id', $request->sheat_id)->first();
+
+            $leads = $sheat->leads()->get();
+            foreach ($leads as $lead) {
+                $lead->delete();
+            }
+
+            $sheat->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Sheat and leads deleted successfully',
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function agentSheatList(Request $request)
+    {
+        try {
+            $agent = $request->user();
+            $sheat = Sheat::where('agent_id', $agent->id)->get();
+            if ($sheat) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Successfully fetched sheat list.',
+                    'data' => $sheat
+                ], 200);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+}

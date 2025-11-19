@@ -1,0 +1,14 @@
+
+{
+  "type": "service_account",
+  "project_id": "altus-airflow",
+  "private_key_id": "f39857201c0ac2ad1ce95c4153812445d54d1c99",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDMcwq2SftlbGA7\nzjZm2fcXWcDEd5ApmMUOIIJCilotS3N5XEzecb3SCIr7G9xiXhyu/25gKIsynTgB\nN/2YUqDDQ0LCJ9UgXmHI89ZDTnLiH69DU2xEJohqeJHIzq0y7radL1PGe7Fcf3YL\nd4+Him9ia2YLh9K8tfhbhShLxzoQfDqIOu7jR3hLVm+P1vZ5Kbu4BlA0SH+9S5RE\nncvCls1N9EtYw4XhxJnRuvWcOdcSC5LyFsBHflcr+hmV0PP4pUxM4XU2LDnn2SzL\nYhWCjfXOpLl222iWg8xp5L/MYyHEwzle2xMOeHmLc3YH2gYla8YBEa4gmtu6GEaw\n1sqcplpjAgMBAAECggEAAydnK+a6RRdF6MZGmpGUOTz+N0ms5KdhqtUfjU07FOXM\nEzw0R14z0nClTDhizvWqtZxlJICbnR1FxucJN3dW2YxJFFuu8v/hvErerE0igpCA\nkKZRzj9V7WaMwS9HBrkeAhC/1xkDZGzm8khW431kOH11poni21xnR2onc/vPzn9F\nA4T18JaKhaeza2CnSV2STyO5LLKX7Zl8cI4Od72bmkCHXBkGsEZKkErZkGdwkGOr\nXezzQ0UYt4AMt/3DONXand2JCsO3q7d30hb+phhZ6L2PYumATydmIqnJUYBmBEJI\ndU9xoxlndDKRexCE4SzW+QtmmlxZf1YXAc9zWiVLAQKBgQD9T778jeWG9g8hKJRO\nKYLUPM+vn+w+jxLxOI97eKHSCAMwNULnUKKBVnonw0D5wifx3O+MthX/SOkyhJxD\n7nv46Vyj0dN1j8uEv1S0qDWam+4q5mh7Ys6Awv8QMPTqHAaMKbl/OxSggNsJplgI\n/lxOCe/2zp4jX0H1Pv0msg9k4wKBgQDOnolAL0dTyLAeRdFNZvvQQjtb2g2ZgOrj\n3BKcz6KZkV3VWJRsm4Ukvb5vVY2Cc4iIn5TLsbpjYj0o5ISmRCDa7f0eSxYPsSZV\n3UEZrUXe2LP+HMIgcEzl2ApoILFw+O4gBEkXnPA96/NorPc9zLvezMAQgx9ySz4M\nmHniTzSsgQKBgQCGnbaVaKMt0d3AdVw7HXxVZevJHWfi5w3d+3zk1PrKL0/icquX\nWhbCPT61muIQ2Ml5kzwKv0l5XTnwiuCwiTCA2yNMO9nwg/ZYGYXea/XwsCUlz0R/\nLccoTnhWFm5Ra4tfOV1G7BLOKSw+OJRYUzSilE1eD/eiPKFEv7Cwu7fKmQKBgQC4\n8pH6wRdAuQhk4Kv8c+19unt1uZaozAv1kJ2cfgOXINb0TMj2+rLQc4POFq+HkLEr\nUmUXe+xSX7JNM1hFmAAs2BDVl/KUc0bUXyuRt1cupZ1gHg/qh3td1edi07jhXgGQ\n6SUgHNuzIcyM6x6Y0/Vq9q4JWcXBQfa1wZqAZ9PHgQKBgEOFK8rCSXLem8GcQf+q\npCsUwLSv1v7Djw0C7ZD4HhT3lKu3Ymt80dT/VYX5z+OnNuYY0n9JjoyUTS3K+8x0\n3jx3cXwvCo+7sCDW5gWaHdzzE0I4lMOandwNN1KbMIioHehrnAXkEgkW2gzCj7tV\nQrBkLCgXeMljTVDeizXZmssS\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@altus-airflow.iam.gserviceaccount.com",
+  "client_id": "114507588976759987713",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40altus-airflow.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
