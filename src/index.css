@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 210 100% 12%;
+    
+    /* Hunter Logistics Brand Colors */
+    --primary: 210 100% 19%; /* Navy Blue #002C5F */
+    --primary-foreground: 0 0% 100%;
+    --primary-dark: 210 100% 15%;
+    --primary-light: 210 100% 25%;
+    
+    --secondary: 0 0% 44%; /* Grey #707070 */
+    --secondary-foreground: 0 0% 100%;
+    
+    --accent: 27 100% 54%; /* Orange #F68B1F */
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 27 100% 60%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 210 100% 12%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 100% 12%;
+    
+    --muted: 210 40% 96%;
+    --muted-foreground: 0 0% 44%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 214 31.8% 91.4%;
+    --input: 214 31.8% 91.4%;
+    --ring: 210 100% 19%;
+    
+    --radius: 0.75rem;
+    
+    /* Custom Design Tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 19%), hsl(210 100% 25%));
+    --gradient-hero: linear-gradient(135deg, hsl(210 100% 15% / 0.95), hsl(210 100% 25% / 0.90));
+    --gradient-accent: linear-gradient(135deg, hsl(27 100% 54%), hsl(27 100% 60%));
+    --shadow-elegant: 0 10px 40px -10px hsl(210 100% 19% / 0.2);
+    --shadow-glow: 0 0 40px hsl(27 100% 54% / 0.3);
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 210 100% 8%;
+    --foreground: 0 0% 98%;
+    
+    --primary: 0 0% 98%;
+    --primary-foreground: 210 100% 19%;
+    
+    --card: 210 100% 12%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 210 100% 12%;
+    --popover-foreground: 0 0% 98%;
+    
+    --secondary: 0 0% 30%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 210 50% 15%;
+    --muted-foreground: 0 0% 70%;
+    
+    --accent: 27 100% 54%;
+    --accent-foreground: 0 0% 100%;
+    
+    --border: 210 50% 20%;
+    --input: 210 50% 20%;
+    --ring: 0 0% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
