@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MapPin, Phone, Mail, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +23,12 @@ const Contact = () => {
   const captchaContainerRef = useRef<HTMLDivElement | null>(null);
   const widgetIdRef = useRef<number | null>(null);
   const [recaptchaToken, setRecaptchaToken] = useState<string>("");
+  const [errors, setErrors] = useState<{ name: string; email: string; phone: string; message: string }>({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
   const siteKey = (window as any).__RECAPTCHA_SITE_KEY__ || "";
 
   useEffect(() => {
@@ -72,13 +79,37 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const phone = formData.phone.trim();
+    const message = formData.message.trim();
+    // reset previous errors
+    setErrors({ name: "", email: "", phone: "", message: "" });
+    if (name.length < 2 || name.length > 80) {
+      setErrors((p) => ({ ...p, name: "Name must be between 2–80 characters." }));
+      return;
+    }
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailOk) {
+      setErrors((p) => ({ ...p, email: "Enter a valid email." }));
+      return;
+    }
+    const phoneOk = /^[0-9+\-()\s]{10,14}$/.test(phone);
+    if (!phoneOk) {
+      setErrors((p) => ({ ...p, phone: "Enter a valid phone (10–14 digits)." }));
+      return;
+    }
+    if (message.length < 10) {
+      setErrors((p) => ({ ...p, message: "Message must be at least 10 characters." }));
+      return;
+    }
     try {
       setSubmitting(true);
       const fd = new FormData();
-      fd.append("fullname", formData.name.trim());
-      fd.append("emailaddr", formData.email.trim());
-      fd.append("phonenumber", formData.phone.trim());
-      fd.append("inquiry", formData.message.trim());
+      fd.append("fullname", name);
+      fd.append("emailaddr", email);
+      fd.append("phonenumber", phone);
+      fd.append("inquiry", message);
       // Honeypot (should remain empty)
       fd.append("url_field", "");
       // reCAPTCHA v2 checkbox: require a response token
@@ -166,10 +197,21 @@ const Contact = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    let v = value;
+    if (name === "name") {
+      v = v.replace(/[^A-Za-zÀ-ÿ .'-]/g, "");
+    } else if (name === "phone") {
+      v = v.replace(/[^0-9+\-()\s]/g, "");
+    }
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: v,
     }));
+    // clear field-specific error on change
+    if (name === "name" && errors.name) setErrors((p) => ({ ...p, name: "" }));
+    if (name === "email" && errors.email) setErrors((p) => ({ ...p, email: "" }));
+    if (name === "phone" && errors.phone) setErrors((p) => ({ ...p, phone: "" }));
+    if (name === "message" && errors.message) setErrors((p) => ({ ...p, message: "" }));
   };
 
   return (
@@ -203,8 +245,15 @@ const Contact = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
+                      autoComplete="name"
+                      inputMode="text"
                       className="h-12 bg-muted/40 border-input focus-visible:ring-2 focus-visible:ring-accent focus-visible:border-accent"
                     />
+                    {errors.name && (
+                      <Alert variant="destructive" className="mt-2">
+                        <AlertDescription>{errors.name}</AlertDescription>
+                      </Alert>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium text-foreground">Your Email</label>
@@ -218,6 +267,11 @@ const Contact = () => {
                       required
                       className="h-12 bg-muted/40 border-input focus-visible:ring-2 focus-visible:ring-accent focus-visible:border-accent"
                     />
+                    {errors.email && (
+                      <Alert variant="destructive" className="mt-2">
+                        <AlertDescription>{errors.email}</AlertDescription>
+                      </Alert>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="phone" className="text-sm font-medium text-foreground">Your Phone</label>
@@ -229,8 +283,16 @@ const Contact = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       required
+                      autoComplete="tel"
+                      inputMode="tel"
+                      maxLength={14}
                       className="h-12 bg-muted/40 border-input focus-visible:ring-2 focus-visible:ring-accent focus-visible:border-accent"
                     />
+                    {errors.phone && (
+                      <Alert variant="destructive" className="mt-2">
+                        <AlertDescription>{errors.phone}</AlertDescription>
+                      </Alert>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="message" className="text-sm font-medium text-foreground">Your Message</label>
@@ -244,6 +306,11 @@ const Contact = () => {
                       rows={6}
                       className="bg-muted/40 border-input focus-visible:ring-2 focus-visible:ring-accent focus-visible:border-accent"
                     />
+                    {errors.message && (
+                      <Alert variant="destructive" className="mt-2">
+                        <AlertDescription>{errors.message}</AlertDescription>
+                      </Alert>
+                    )}
                   </div>
                   {/* reCAPTCHA v2 checkbox (manual render; no auto-render class/attrs) */}
                   <div className="pt-2">
